@@ -1,0 +1,18 @@
+Package: hMsig
+Title: hMsig
+Version: 0.0.1
+Authors@R: 
+    person("Seong-su", "Choi", , "knu19css@gmail.com", role = c("aut", "cre"))
+Description: MsigDB broswer.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
+    license
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports:
+	jsonlite,
+	shiny,
+	DT,
+	DBI,
+	RSQLite,
+	dplyr
