@@ -2,16 +2,17 @@
 #'
 #' You can search MsigDB gene sets on R from new shiny tab.
 #'
+#' @importFrom shiny jsonlite DT DBI RSQLite dplyr function
 #' @param species A specie, Hu or Mm.
 #' @return The gene set's name list that you selected.
 #' @export
 
 msigdb_search <- function(species = NULL) {
   return_env <- new.env()
-  
+
   ui <- fluidPage(
     h3("MsigDB Browser", style = "font-size: 24px; font-weight: bold; color: #007BFF"),
-    
+
     tags$script(HTML("
     $(document).on('click', 'a.dynamic-link', function(e) {
       e.preventDefault();
@@ -22,8 +23,8 @@ msigdb_search <- function(species = NULL) {
       return false;
     });
   ")),
-    
-    
+
+
     sidebarLayout(
       sidebarPanel(
         width = 3,
@@ -49,13 +50,13 @@ msigdb_search <- function(species = NULL) {
         br(), br(),
         actionButton("exit", "Exit", class="btn btn-danger btn-lg", style = "width: 100%;")
       ),
-      
-      
+
+
       mainPanel(
         width = 9,
-        
-        br(), 
-        
+
+        br(),
+
         fluidRow(
           column(2, textInput("keyword", "Keyword: ")),
           column(2, selectInput("species", "Species: ",
@@ -64,34 +65,34 @@ msigdb_search <- function(species = NULL) {
           column(4, selectInput("collection", "Collection: ",
                                 choices = if(is.null(species)) {
                                   c("all", "C2:CGP", "C1", "C2:CP:BIOCARTA", "C2:CP:KEGG_LEGACY", "C3:MIR:MIRDB",
-                                    "C3:MIR:MIR_LEGACY", "C3:TFT:GTRD", "C3:TFT:TFT_LEGACY", 
-                                    "C2:CP:REACTOME", "C2:CP:WIKIPATHWAYS", "C2:CP", "C4:CGN", 
-                                    "C4:CM", "C6", "C4:3CA", "C7:IMMUNESIGDB", "C7:VAX", "C8", 
+                                    "C3:MIR:MIR_LEGACY", "C3:TFT:GTRD", "C3:TFT:TFT_LEGACY",
+                                    "C2:CP:REACTOME", "C2:CP:WIKIPATHWAYS", "C2:CP", "C4:CGN",
+                                    "C4:CM", "C6", "C4:3CA", "C7:IMMUNESIGDB", "C7:VAX", "C8",
                                     "C5:GO:BP", "C5:GO:CC", "C5:GO:MF", "H", "C5:HPO", "C2:CP:KEGG_MEDICUS")
                                 }  else if(species == "Mm") {
-                                  c("all", "M2:CGP", "M5:GO:BP", "M3:MIRDB", "M5:MPT", "M8", "MH", 
-                                    "M2:CP:REACTOME", "M2:CP:WIKIPATHWAYS", "M5:GO:CC", 
+                                  c("all", "M2:CGP", "M5:GO:BP", "M3:MIRDB", "M5:MPT", "M8", "MH",
+                                    "M2:CP:REACTOME", "M2:CP:WIKIPATHWAYS", "M5:GO:CC",
                                     "M5:GO:MF", "M1", "M2:CP:BIOCARTA", "M3:GTRD")
                                 } else {
                                   c("all", "C2:CGP", "C1", "C2:CP:BIOCARTA", "C2:CP:KEGG_LEGACY", "C3:MIR:MIRDB",
-                                    "C3:MIR:MIR_LEGACY", "C3:TFT:GTRD", "C3:TFT:TFT_LEGACY", 
-                                    "C2:CP:REACTOME", "C2:CP:WIKIPATHWAYS", "C2:CP", "C4:CGN", 
-                                    "C4:CM", "C6", "C4:3CA", "C7:IMMUNESIGDB", "C7:VAX", "C8", 
+                                    "C3:MIR:MIR_LEGACY", "C3:TFT:GTRD", "C3:TFT:TFT_LEGACY",
+                                    "C2:CP:REACTOME", "C2:CP:WIKIPATHWAYS", "C2:CP", "C4:CGN",
+                                    "C4:CM", "C6", "C4:3CA", "C7:IMMUNESIGDB", "C7:VAX", "C8",
                                     "C5:GO:BP", "C5:GO:CC", "C5:GO:MF", "H", "C5:HPO", "C2:CP:KEGG_MEDICUS")
-                                },          
+                                },
                                 selected = "all"))
         ),
-        
+
         br(),
-        
+
         fluidRow(
           column(12, DTOutput("Hu.Msigdf.filtered")))
       ))
   )
-  
-  
-  
-  
+
+
+
+
   server <- function(input, output, session) {
     dn.Msigdf <- if(species == "Hu" || is.null(species)) {
       read.csv("https://raw.githubusercontent.com/HonglabKNU/Main/refs/heads/CS/DB/msigdb_v2024.1.Hs.csv")
@@ -100,14 +101,14 @@ msigdb_search <- function(species = NULL) {
     } else {
       read.csv("https://raw.githubusercontent.com/HonglabKNU/Main/refs/heads/CS/DB/msigdb_v2024.1.Hs.csv")
     }
-    
+
     Hu.Msigdf <- dn.Msigdf[, -1]
     Hu.Msigdf$Detail_link <- paste0(
       '<a href="https://www.gsea-msigdb.org/gsea/msigdb/human/geneset/',
       Hu.Msigdf$standard_name,
       '.html" class="dynamic-link">Detail Link</a>'
     )
-    
+
     #filtering by keyword
     Hu.Msigdf.filtered <- reactive({
       filtered.data <- Hu.Msigdf %>% select(1:3, "source_species_code", "Detail_link")
@@ -117,29 +118,29 @@ msigdb_search <- function(species = NULL) {
           filter(if_any(c("standard_name", "description_brief", "description_full"), ~ grepl(keyword, ., ignore.case = TRUE))) %>%
           select(1:3, "source_species_code", "Detail_link")
       }
-      
+
       if (input$species != "all") {
         filtered.data <- filtered.data %>% filter(source_species_code == input$species)
       }
-      
+
       if (input$collection != "all") {
         filtered.data <- filtered.data %>% filter(collection_name == input$collection)
       }
-      
+
       return(filtered.data)
     })
-    
+
     output$Hu.Msigdf.filtered <- renderDT({
-      datatable(Hu.Msigdf.filtered(), escape = FALSE, selection = "multiple", 
+      datatable(Hu.Msigdf.filtered(), escape = FALSE, selection = "multiple",
                 rownames = F
       )
     }, server = T)
-    
-    
+
+
     ##Sidebar
     Hu.Msigdf.selected <- reactiveVal(data.frame(standard_name = character(0)))
     Final.output <- reactiveVal(list())
-    
+
     #add genesets
     observeEvent(input$select, {
       geneset.selected <- input$Hu.Msigdf.filtered_rows_selected
@@ -153,16 +154,16 @@ msigdb_search <- function(species = NULL) {
         Hu.Msigdf.selected(updated_df)
       }
     })
-    
+
     #selected render
     output$selected.df <- renderDT({
       datatable(Hu.Msigdf.selected(), colnames = character(0), selection = "multiple",
-                options = list(dom = "t", 
+                options = list(dom = "t",
                                scrollX = TRUE,
                                scrollY = '200px',
                                paging = FALSE,
                                columnDefs = list(list(
-                                 targets = 1, 
+                                 targets = 1,
                                  render = JS(
                                    "function(data, type, row, meta) {",
                                    "if(type === 'display' && data.length > 50) {",
@@ -173,7 +174,7 @@ msigdb_search <- function(species = NULL) {
                                  )
                                ))))
     })
-    
+
     #remove selected
     observeEvent(input$remove, {
       geneset.selected <- input$selected.df_rows_selected
@@ -183,18 +184,18 @@ msigdb_search <- function(species = NULL) {
         Hu.Msigdf.selected(removed.df)
       }
     })
-    
+
     #reset selected
     observeEvent(input$reset, {
       Hu.Msigdf.selected(data.frame(standard_name = character(0)))
     })
-    
+
     #export
     observeEvent(input$export, {
       temp.df <- Hu.Msigdf.selected()
       temp.list <- as.vector(temp.df$standard_name)
       Final.output(temp.list)
-      
+
       if (length(temp.list) != 0) {
         showModal(modalDialog(
           title = "✅ Export complete!",
@@ -211,7 +212,7 @@ msigdb_search <- function(species = NULL) {
         ))
       }
     })
-    
+
     #download to csv
     output$exportcsv <- downloadHandler(
       filename = function() {
@@ -222,12 +223,12 @@ msigdb_search <- function(species = NULL) {
         write.csv(temp.df, file, row.names = FALSE)
       }
     )
-    
+
     #go to msigDB
     observeEvent(input$gotomsigdb, {
       browseURL("https://www.gsea-msigdb.org/gsea/index.jsp")
     })
-    
+
     #exit
     observeEvent(input$exit, {
       showModal(modalDialog(
@@ -240,19 +241,18 @@ msigdb_search <- function(species = NULL) {
         )
       ))
     })
-    
+
     observeEvent(input$confirm_exit, {
       removeModal()
       stopApp(Final.output())
     })
   }
-  
+
   result <- runApp(shinyApp(ui, server))
   return(result)
 }
 msigdb.browse <- function(species, name) {
-  library(jsonlite)
-  
+
   if(species == "Hu") {
     geneset_path <- "https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName="
   } else if (species == "Mm") {
@@ -260,9 +260,9 @@ msigdb.browse <- function(species, name) {
   } else {
     stop("It's a specie that doesn't support.")
   }
-  
+
   temp.list <- c()
-  
+
   temp.list <- lapply(name, function(n) {
     geneset_url <- paste0(geneset_path, n, "&fileType=json")
     temp <- fromJSON(geneset_url)
@@ -270,13 +270,13 @@ msigdb.browse <- function(species, name) {
     geneset <- data.frame(gene = unlist(temp_gene))
     return(geneset)
   })
-  
-  
-  
-  
+
+
+
+
   # if you wanna delete 'gene' from 1st row,
   # geneset <- data.frame(gene = temp_df[[1]]$geneSymbols)
-  
+
   names(temp.list) <- name
   return(temp.list)
 }

@@ -2,6 +2,7 @@
 #'
 #' You can load MsigDB gene sets list on R from vector.
 #'
+#' @importFrom shiny jsonlite DT DBI RSQLite dplyr
 #' @param species A specie, Hu or Mm.
 #' @param name The gene sets' name to load.
 #' @return The gene set's that you selected.
@@ -15,9 +16,9 @@ msigdb_browse <- function(species, name) {
   } else {
     stop("It's a specie that doesn't support.")
   }
-  
+
   temp.list <- c()
-  
+
   temp.list <- lapply(name, function(n) {
     geneset_url <- paste0(geneset_path, n, "&fileType=json")
     temp <- fromJSON(geneset_url)
@@ -26,4 +27,3 @@ msigdb_browse <- function(species, name) {
     return(geneset)
   })
 }
-  
