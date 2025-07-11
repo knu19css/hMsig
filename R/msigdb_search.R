@@ -2,7 +2,12 @@
 #'
 #' You can search MsigDB gene sets on R from new shiny tab.
 #'
-#' @importFrom shiny jsonlite DT DBI RSQLite dplyr function
+#' @import shiny
+#' @import jsonlite
+#' @import DT
+#' @import DBI
+#' @import RSQLite
+#' @import dplyr
 #' @param species A specie, Hu or Mm.
 #' @return The gene set's name list that you selected.
 #' @export

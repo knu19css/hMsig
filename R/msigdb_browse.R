@@ -1,8 +1,12 @@
 #' msigdb_browser
 #'
 #' You can load MsigDB gene sets list on R from vector.
-#'
-#' @importFrom shiny jsonlite DT DBI RSQLite dplyr
+#' @import shiny
+#' @import jsonlite
+#' @import DT
+#' @import DBI
+#' @import RSQLite
+#' @import dplyr
 #' @param species A specie, Hu or Mm.
 #' @param name The gene sets' name to load.
 #' @return The gene set's that you selected.

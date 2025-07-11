@@ -2,3 +2,9 @@
 
 export(msigdb_browse)
 export(msigdb_search)
+import(DBI)
+import(DT)
+import(RSQLite)
+import(dplyr)
+import(jsonlite)
+import(shiny)
