@@ -1,10 +1,9 @@
 #' msigdb_search
 #'
 #' You can search MsigDB gene sets on R from new shiny tab.
-#'
-#' @import shiny
+#' @importFrom shiny validate
 #' @import jsonlite
-#' @import DT
+#' @importFrom DT dataTableOutput renderDataTable
 #' @import DBI
 #' @import RSQLite
 #' @import dplyr
