@@ -1,9 +1,9 @@
 #' msigdb_browser
 #'
 #' You can load MsigDB gene sets list on R from vector.
-#' @importFrom shiny validate
-#' @importFrom jsonlite validate
-#' @importFrom DT dataTableOutput renderDataTable
+#' @import shiny
+#' @import jsonlite
+#' @import DT
 #' @import DBI
 #' @import RSQLite
 #' @import dplyr
