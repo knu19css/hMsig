@@ -4,15 +4,14 @@ Version: 0.0.1
 Authors@R: 
     person("Seong-su", "Choi", , "knu19css@gmail.com", role = c("aut", "cre"))
 Description: MsigDB broswer.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports:
-	jsonlite (== 2.0.0),
-	shiny (== 1.10.0),
-	DT (== 0.33),
-	DBI (== 1.2.3),
-	RSQLite (== 2.4.1),
-	dplyr (== 1.1.4)
+	jsonlite (>= 2.0.0),
+	shiny (>= 1.10.0),
+	DT (>= 0.33),
+	DBI (>= 1.2.3),
+	RSQLite (>= 2.4.1),
+	dplyr (>= 1.1.4)
