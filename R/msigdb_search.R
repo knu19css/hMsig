@@ -2,7 +2,7 @@
 #'
 #' You can search MsigDB gene sets on R from new shiny tab.
 #' @importFrom shiny validate
-#' @import jsonlite
+#' @importFrom jsonlite validate
 #' @importFrom DT dataTableOutput renderDataTable
 #' @import DBI
 #' @import RSQLite
@@ -254,33 +254,4 @@ msigdb_search <- function(species = NULL) {
 
   result <- runApp(shinyApp(ui, server))
   return(result)
-}
-msigdb.browse <- function(species, name) {
-
-  if(species == "Hu") {
-    geneset_path <- "https://www.gsea-msigdb.org/gsea/msigdb/human/download_geneset.jsp?geneSetName="
-  } else if (species == "Mm") {
-    geneset_path <- "https://www.gsea-msigdb.org/gsea/msigdb/mouse/download_geneset.jsp?geneSetName="
-  } else {
-    stop("It's a specie that doesn't support.")
-  }
-
-  temp.list <- c()
-
-  temp.list <- lapply(name, function(n) {
-    geneset_url <- paste0(geneset_path, n, "&fileType=json")
-    temp <- fromJSON(geneset_url)
-    temp_gene <- c(temp[[1]]$geneSymbols)
-    geneset <- data.frame(gene = unlist(temp_gene))
-    return(geneset)
-  })
-
-
-
-
-  # if you wanna delete 'gene' from 1st row,
-  # geneset <- data.frame(gene = temp_df[[1]]$geneSymbols)
-
-  names(temp.list) <- name
-  return(temp.list)
 }

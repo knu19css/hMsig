@@ -2,7 +2,7 @@
 #'
 #' You can load MsigDB gene sets list on R from vector.
 #' @importFrom shiny validate
-#' @import jsonlite
+#' @importFrom jsonlite validate
 #' @importFrom DT dataTableOutput renderDataTable
 #' @import DBI
 #' @import RSQLite
