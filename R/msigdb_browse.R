@@ -24,7 +24,7 @@ msigdb_browse <- function(species, name) {
   temp.list <- c()
 
   temp.list <- lapply(name, function(n) {
-    geneset_url <- paste0(geneset_path, n, "&fileType=json")
+    geneset_url <- paste0(geneset_path, n, "&fileType=grp")
     temp <- fromJSON(geneset_url)
     temp_gene <- c(list("gene"), temp[[1]]$geneSymbols)
     geneset <- data.frame(gene = unlist(temp_gene))
